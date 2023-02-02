@@ -54,10 +54,13 @@ walletContract.on("TestLogNumTransferLayers", numTransferLayers => {
   console.log("numTransferLayers:", numTransferLayers)
 })
 
-walletContract.on("TestLogTransferLayer", (amountMin, amountMax) => {
+walletContract.on("TestLogTransferLayer", (transferNum, transferLayerNum, amountMin, amountMax, numTokens) => {
   console.log("EVENT Wallet: TestLogTransferLayer")
-  console.log("amountMin:", amountMin)
+  console.log("transferNum:", transferNum)
+  console.log("transferLayerNum:", transferLayerNum)
   console.log("amountMax:", amountMax)
+  console.log("amountMin:", amountMin)
+  console.log("numTokens:", numTokens)
 })
 
 // Transfers

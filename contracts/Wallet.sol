@@ -101,6 +101,8 @@ contract Wallet {
 
         layer.tokens[tokenNum] = token;
       }
+      
+      numTransferLayers++;
     }
   }
 
@@ -137,8 +139,11 @@ contract Wallet {
   // TransferLayers
   event TestLogNumTransferLayers(uint _numTransferLayers);
   event TestLogTransferLayer(
+    uint _transferNum,
+    uint _transferLayerNum,
     uint256 _amountMin,
-    uint256 _amountMax
+    uint256 _amountMax,
+    uint256 _numTokens
   );
 
   // Transfers
@@ -159,17 +164,16 @@ contract Wallet {
     uint256 amount = 1000;
     
     testMakeTransfer(_receiver, amount);
+    testMakeTransfer(_receiver, amount);
+    testMakeTransfer(_receiver, amount);
+    testMakeTransfer(_receiver, amount);
+    testMakeTransfer(_receiver, amount);
+    testMakeTransfer(_receiver, amount);
+    testMakeTransfer(_receiver, amount);
+    testMakeTransfer(_receiver, amount);
 
     testLogTransferLayers();
-    // testLogTransfers();
-
-    /*
-    testMakeTransfer(_receiver, amount);
-    testMakeTransfer(_receiver, amount);
-    testMakeTransfer(_receiver, amount);
-    testMakeTransfer(_receiver, amount);
     testLogTransfers();
-    */
   }
 
   function testSetLayersToMakeTransfer() private {
@@ -212,17 +216,35 @@ contract Wallet {
     makeTransfer(_receiver, _amount);
   }
 
+  // mapping (uint => mapping (uint => Layer)) TransferLayers;
   function testLogTransferLayers() private {
     emit TestLogNumTransferLayers(numTransferLayers);
 
-    // emit TestLogTransferLayer();
+    for (uint transferNum = 0; transferNum < numTransfers; transferNum++) {
+      for (uint transferLayerNum = 0; transferLayerNum < numTransferLayers; transferLayerNum++) {
+        Layer storage layer = TransferLayers[transferNum][transferLayerNum];
+
+        uint256 amountMin = layer.amount.min;
+        uint256 amountMax = layer.amount.max;
+
+        uint numTokens = layer.numTokens;
+
+        emit TestLogTransferLayer(
+          transferNum,
+          transferLayerNum,
+          amountMin,
+          amountMax,
+          numTokens
+        );
+      }
+    }
   }
 
   function testLogTransfers() private {
     emit TestLogNumTransfers(numTransfers);
 
-    for (uint transferNum = 0; transferNum < numTransfers; transferNum++) {
-      Transfer storage transfer = Transfers[transferNum];
+    for (uint _transferNum = 0; _transferNum < numTransfers; _transferNum++) {
+      Transfer storage transfer = Transfers[_transferNum];
 
       uint256 transferNum = transfer.transferNum;
 
