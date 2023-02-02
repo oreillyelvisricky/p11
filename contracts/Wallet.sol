@@ -3,6 +3,30 @@
 pragma solidity ^0.8.7;
 
 contract Wallet {
+  // Layers
+
+
+  struct AmountMinMax {
+    uint256 min;
+    uint256 max;
+  }
+
+  struct Layer {
+    AmountMinMax amount;
+
+    uint numTokens;
+    mapping (uint => string) tokens;
+
+    // Layers
+  }
+
+
+  uint numLayersToMakeTransfer;
+  mapping (uint => Layer) LayersToMakeTransfer;
+
+  uint numTransferLayers;
+  mapping (uint => mapping (uint => Layer)) TransferLayers;
+
   struct Transfer {
     uint256 transferNum;
 
@@ -18,11 +42,66 @@ contract Wallet {
   mapping (uint => Transfer) Transfers;
 
 
+  function addLayerToMakeTransfer(
+    uint256 _amountMin,
+    uint256 _amountMax
+  ) private {
+    Layer storage layer = LayersToMakeTransfer[numLayersToMakeTransfer];
+
+    AmountMinMax memory amount = AmountMinMax({
+      min: _amountMin,
+      max: _amountMax
+    });
+
+    layer.amount = amount;
+
+    string [2] memory _tokens = [ "ETH", "USDC" ];
+
+    for (uint i = 0; i < _tokens.length; i++) {
+      string memory token = _tokens[i];
+
+      layer.tokens[i] = token;
+
+      layer.numTokens++;
+    }
+
+    numLayersToMakeTransfer++;
+  }
+
+
   function makeTransfer(
     address _receiver,
     uint256 _amount
   ) private {
+    addTransferLayers();
     addTransfer(_receiver, _amount);
+
+    // Check that numTransferLayers equals numTransfers
+    // Queue transfers until this one is done with the 2 funcs above
+    // Lock parts of the code
+  }
+
+  function addTransferLayers() private {
+    for (uint layerNum = 0; layerNum < numLayersToMakeTransfer; layerNum++) {
+      Layer storage _layer = LayersToMakeTransfer[layerNum];
+
+      Layer storage layer = TransferLayers[numTransfers][layerNum];
+
+      AmountMinMax memory amount = AmountMinMax({
+        min: _layer.amount.min,
+        max: _layer.amount.max
+      });
+
+      layer.amount = amount;
+
+      layer.numTokens = _layer.numTokens;
+
+      for (uint tokenNum = 0; tokenNum < _layer.numTokens; tokenNum++) {
+        string memory token = _layer.tokens[tokenNum];
+
+        layer.tokens[tokenNum] = token;
+      }
+    }
   }
 
   function addTransfer(
@@ -46,13 +125,28 @@ contract Wallet {
 
 
 
+  event TestLogNumLayersToMakeTransfer(uint _numLayersToMakeTransfer);
+  event TestLogLayerToMakeTransfer(
+    uint _layerNum,
+    uint256 _amountMin,
+    uint256 _amountMax,
+    uint _numTokens
+  );
   event TestLogNumTransfers(uint _numTransfers);
-  event TestLogTransfer();
+  event TestLogTransfer(
+    uint256 _transferNum,
+    address _receiver,
+    uint256 _amount,
+    uint256 _transferLayersIndex,
+    bool _executed
+  );
 
 
   function test(address _receiver) public virtual {
-    // testSetLayersToMakeTransfer();
-    // testLogLayersToMakeTransfer();
+    testSetLayersToMakeTransfer();
+    testLogLayersToMakeTransfer();
+
+    /*
 
     uint256 amount = 1000;
     
@@ -62,6 +156,41 @@ contract Wallet {
     testMakeTransfer(_receiver, amount);
     testMakeTransfer(_receiver, amount);
     testLogTransfers();
+
+    */
+  }
+
+  function testSetLayersToMakeTransfer() private {
+    addLayerToMakeTransfer(0, 100);
+    addLayerToMakeTransfer(100, 120);
+  }
+
+  function testLogLayersToMakeTransfer() private {
+    emit TestLogNumLayersToMakeTransfer(numLayersToMakeTransfer);
+
+    for (uint layerNum = 0; layerNum < numLayersToMakeTransfer; layerNum++) {
+      Layer storage layer = LayersToMakeTransfer[layerNum];
+
+      uint256 amountMin = layer.amount.min;
+      uint256 amountMax = layer.amount.max;
+
+      uint numTokens = layer.numTokens;
+
+      /*
+      for (uint tokenNum = 0; tokenNum < _layer.numTokens; tokenNum++) {
+        string memory token = _layer.tokens[tokenNum];
+
+        layer.tokens[tokenNum] = token;
+      }
+      */
+      
+      emit TestLogLayerToMakeTransfer(
+        layerNum,
+        amountMin,
+        amountMax,
+        numTokens
+      );
+    }
   }
 
   function testMakeTransfer(
@@ -75,7 +204,27 @@ contract Wallet {
     emit TestLogNumTransfers(numTransfers);
 
     for (uint transferNum = 0; transferNum < numTransfers; transferNum++) {
-      emit TestLogTransfer();
+      Transfer storage transfer = Transfers[transferNum];
+
+      uint256 transferNum = transfer.transferNum;
+
+      address receiver = transfer.receiver;
+      uint256 amount = transfer.amount;
+
+      uint256 transferLayersIndex = transfer.transferLayersIndex;
+
+      bool executed = transfer.executed;
+
+      emit TestLogTransfer(
+        transferNum,
+
+        receiver,
+        amount,
+
+        transferLayersIndex,
+
+        executed
+      );
     }
   }
 }

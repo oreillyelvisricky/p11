@@ -34,17 +34,7 @@ main().catch(error => {
   process.exitCode = 1
 })
 
-walletContract.on("TestLogNumTransfers", numTransfers => {
-  console.log("EVENT Wallet: TestLogNumTransfers")
-  console.log("numTransfers:", numTransfers)
-})
-
-walletContract.on("TestLogTransfer", () => {
-  console.log("EVENT Wallet: TestLogTransfer")
-})
-
-/*
-walletContract.on("TestLogNumLayersToMakeTransfer", (numLayersToMakeTransfer) => {
+walletContract.on("TestLogNumLayersToMakeTransfer", numLayersToMakeTransfer => {
   console.log("EVENT Wallet: TestLogNumLayersToMakeTransfer")
   console.log("numLayersToMakeTransfer:", numLayersToMakeTransfer)
 })
@@ -56,7 +46,21 @@ walletContract.on("TestLogLayerToMakeTransfer", (layerNum, amountMin, amountMax,
   console.log("amountMax:", amountMax)
   console.log("numTokens:", numTokens)
 })
-*/
+
+walletContract.on("TestLogNumTransfers", numTransfers => {
+  console.log("EVENT Wallet: TestLogNumTransfers")
+  console.log("numTransfers:", numTransfers)
+})
+
+walletContract.on("TestLogTransfer", (transferNum, receiver, amount, transferLayersIndex, executed) => {
+  console.log("EVENT Wallet: TestLogTransfer")
+  console.log("transferNum:", transferNum)
+  console.log("receiver:", receiver)
+  console.log("amount:", amount)
+  console.log("transferLayersIndex:", transferLayersIndex)
+  console.log("executed:", executed)
+})
+
 
 /*
 walletContract.on("LogTransferLayer", (numTransferLayers, numTransfers, amountMin, amountMax) => {
