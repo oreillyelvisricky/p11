@@ -125,6 +125,7 @@ contract Wallet {
 
 
 
+  // LayersToMakeTransfer
   event TestLogNumLayersToMakeTransfer(uint _numLayersToMakeTransfer);
   event TestLogLayerToMakeTransfer(
     uint _layerNum,
@@ -132,6 +133,15 @@ contract Wallet {
     uint256 _amountMax,
     uint _numTokens
   );
+
+  // TransferLayers
+  event TestLogNumTransferLayers(uint _numTransferLayers);
+  event TestLogTransferLayer(
+    uint256 _amountMin,
+    uint256 _amountMax
+  );
+
+  // Transfers
   event TestLogNumTransfers(uint _numTransfers);
   event TestLogTransfer(
     uint256 _transferNum,
@@ -146,17 +156,19 @@ contract Wallet {
     testSetLayersToMakeTransfer();
     testLogLayersToMakeTransfer();
 
-    /*
-
     uint256 amount = 1000;
     
     testMakeTransfer(_receiver, amount);
+
+    testLogTransferLayers();
+    // testLogTransfers();
+
+    /*
     testMakeTransfer(_receiver, amount);
     testMakeTransfer(_receiver, amount);
     testMakeTransfer(_receiver, amount);
     testMakeTransfer(_receiver, amount);
     testLogTransfers();
-
     */
   }
 
@@ -198,6 +210,12 @@ contract Wallet {
     uint256 _amount
   ) private {
     makeTransfer(_receiver, _amount);
+  }
+
+  function testLogTransferLayers() private {
+    emit TestLogNumTransferLayers(numTransferLayers);
+
+    // emit TestLogTransferLayer();
   }
 
   function testLogTransfers() private {

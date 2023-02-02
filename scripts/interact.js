@@ -34,6 +34,7 @@ main().catch(error => {
   process.exitCode = 1
 })
 
+// LayersToMakeTransfer
 walletContract.on("TestLogNumLayersToMakeTransfer", numLayersToMakeTransfer => {
   console.log("EVENT Wallet: TestLogNumLayersToMakeTransfer")
   console.log("numLayersToMakeTransfer:", numLayersToMakeTransfer)
@@ -47,6 +48,19 @@ walletContract.on("TestLogLayerToMakeTransfer", (layerNum, amountMin, amountMax,
   console.log("numTokens:", numTokens)
 })
 
+// TransferLayers
+walletContract.on("TestLogNumTransferLayers", numTransferLayers => {
+  console.log("EVENT Wallet: TestLogNumTransferLayers")
+  console.log("numTransferLayers:", numTransferLayers)
+})
+
+walletContract.on("TestLogTransferLayer", (amountMin, amountMax) => {
+  console.log("EVENT Wallet: TestLogTransferLayer")
+  console.log("amountMin:", amountMin)
+  console.log("amountMax:", amountMax)
+})
+
+// Transfers
 walletContract.on("TestLogNumTransfers", numTransfers => {
   console.log("EVENT Wallet: TestLogNumTransfers")
   console.log("numTransfers:", numTransfers)
